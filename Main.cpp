@@ -25,10 +25,9 @@ int main(int argc, char **argv){
 	buffer[0] = rank;
 
 	std::vector<Attribute<char>> att(1);
-	MPI_Datatype MPI_ATTRIBUTE;
+	MPI_Datatype MPI_ATTRIBUTE = Make_MPI_Atribute<char>();
 	Attribute<char> attrib = Attribute<char>(0, '#');
 	att[0] = attrib;
-	attrib.Make(&MPI_ATTRIBUTE);
 
 	if (rank == 0){
 
