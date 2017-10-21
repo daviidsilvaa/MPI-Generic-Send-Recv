@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include "MPIImpl.hpp"
 #include "Attribute.hpp"
+#include "Cell.hpp"
+#include "CellularSpace.hpp"
 
 #define MASTER 0
 #define FROM_MASTER 0
@@ -30,20 +32,18 @@ int main(int argc, char **argv){
 	att[0] = attrib;
 
 	if (rank == 0){
-
-
 		printf("Hello world!  I am process number: %02d on host %s\n",
 			buffer[0], hostname);
 
 		for (int i = 1; i < numtasks; i++){
-			Receive<int>(buffer, i, FROM_MASTER);
+			Receive<int>(buffer, buffer.size(), i, FROM_MASTER);
 			// Send<Attribute<char>>(att, i, FROM_MASTER);
 			printf("\tProc %02d reports: %02d\n",
 				i, buffer[0]);
 		}
 	}
 	else{
-		Send<int>(buffer, MASTER, FROM_MASTER);
+		Send<int>(buffer, buffer.size(), MASTER, FROM_MASTER);
 		// Receive<Attribute<char>>(att, MASTER, FROM_MASTER);
 		printf("Hello world!  I am process number: %02d on host %s\n",
 			buffer[0], hostname);
