@@ -164,9 +164,9 @@ MPI_Datatype Make_MPI_Cell(){
     MPI_Datatype MPI_Cell;
 
     const int nitens = 5;
-    MPI_Datatype blocktypes[5] = {MPI_INT, MPI_INT, MPI_Attribute, MPI_INT, MPI_INT};
-    int blocklengths[5] = {1, 1, 1, (NEIGHBORS + NEIGHBORS), 1};
-    MPI_Aint offsets[5] = {offsetof(Cell<T>, x), offsetof(Cell<T>, y), offsetof(Cell<T>, attribute),
+    MPI_Datatype blocktypes[nitens] = {MPI_INT, MPI_INT, MPI_Attribute, MPI_INT, MPI_INT};
+    int blocklengths[nitens] = {1, 1, 1, (NEIGHBORS + NEIGHBORS), 1};
+    MPI_Aint offsets[nitens] = {offsetof(Cell<T>, x), offsetof(Cell<T>, y), offsetof(Cell<T>, attribute),
         offsetof(Cell<T>, neighbors), offsetof(Cell<T>, count_neighbors)};
 
     MPI_Type_create_struct(nitens, blocklengths, offsets, blocktypes, &MPI_Cell);

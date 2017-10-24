@@ -66,8 +66,10 @@ public:
             for(int i = 0; i < (cs.height * cs.width); i++){
                 cs.memoria[(i + cs.x_init*cs.width)] = Cell<T>((i + cs.x_init*cs.width), (i%(cs.height * cs.width)),
                     Attribute<T>((i + cs.x_init*cs.width), 0));
-                
+                cs.memoria[(i + cs.x_init*cs.width)] =
+                    cs.memoria[(i + cs.x_init*cs.width)].SetNeighbor(cs.memoria[(i + cs.x_init*cs.width)]);
             }
+            
         }
     }
 };

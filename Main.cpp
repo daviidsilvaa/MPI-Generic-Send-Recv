@@ -6,8 +6,14 @@
 #include "Attribute.hpp"
 #include "Cell.hpp"
 #include "CellularSpace.hpp"
+#include "Flow.hpp"
 #include "Defines.hpp"
 using namespace std;
+
+template<>
+double Flow<double>::execute(){
+	return 0.1;
+}
 
 int main(int argc, char **argv){
 	int comm_rank;
@@ -25,21 +31,12 @@ int main(int argc, char **argv){
 	cs.Scatter(MPI_COMM_WORLD);
 
 	if (comm_rank == 0){
-		// printf("Hello world!  I am process number: %02d\n",
-		// 	buffer[0]);
-
 		for (int i = 1; i < comm_size; i++){
 			Receive<int>(buffer, buffer.size(), i, FROM_MASTER);
-			// Send<Attribute<char>>(att, i, FROM_MASTER);
-			// printf("\tProc %02d reports: %02d\n",
-			// 	i, buffer[0]);
 		}
 	}
 	else{
 		Send<int>(buffer, buffer.size(), MASTER, FROM_MASTER);
-		// Receive<Attribute<char>>(att, MASTER, FROM_MASTER);
-		// printf("Hello world!  I am process number: %02d\n",
-		// 	buffer[0]);
 	}
 
 	MPI_Finalize();
