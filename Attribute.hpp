@@ -22,6 +22,14 @@ public:
 
     ~Attribute(){ }
 
+    Attribute<T>& operator=(const Attribute<T> &attribute){
+        if(this != &attribute){
+            this->SetKey(attribute.key);
+            this->SetValue(attribute.value);
+        }
+        return *this;
+    }
+
 	int GetKey(void){
 		return this->key;
 	}

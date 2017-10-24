@@ -15,7 +15,7 @@ public:
     int y_init;
     int width;
     int height;
-    Cell<T> memoria[TAM1*TAM2];
+    Cell<T> memoria[DIMX*DIMY];
 
     CellularSpace(){ }
 
@@ -62,24 +62,25 @@ public:
             CellularSpace<T> cs = CellularSpace<T>(x_init_s, y_init_s, height_s, width_s);
             MPI_Aint aint;
             int address = MPI_Address(&cs, &aint);
-            cout << comm_rank << "\t" << aint << endl;
+            // cout << comm_rank << "\t" << aint << endl;
             for(int i = 0; i < (cs.height * cs.width); i++){
                 cs.memoria[(i + cs.x_init*cs.width)] = Cell<T>((i + cs.x_init*cs.width), (i%(cs.height * cs.width)),
                     Attribute<T>((i + cs.x_init*cs.width), 0));
+                
             }
         }
     }
-
-    // void SetCell(Cell<T> cell, const int &i, const int &j){
-    //     this->memoria[i*this->height + j] = cell;
-    // }
-    //
-    // Cell<T> GetCell(const int &i, const int &j){
-	// 	return memoria[i*this->height + j];
-	// }
 };
 
 #endif
+
+// void SetCell(Cell<T> cell, const int &i, const int &j){
+//     this->memoria[i*this->height + j] = cell;
+// }
+//
+// Cell<T> GetCell(const int &i, const int &j){
+// 	return memoria[i*this->height + j];
+// }
 
 // static CellularSpace* create(const int &width, const int &height, const MPI_Comm &mpi_comm){
 //     CellularSpace<T> *cs = new CellularSpace<T>;
