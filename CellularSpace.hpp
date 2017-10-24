@@ -15,9 +15,16 @@ public:
     int y_init;
     int width;
     int height;
-    Cell<T> memoria[DIMX*DIMY];
+    Cell<T> memoria[PROC_DIMX*PROC_DIMY];
 
     CellularSpace(){ }
+
+    CellularSpace(const int &height, const int &width){
+        this->x_init = 0;
+        this->y_init = 0;
+        this->width = width;
+        this->height = height;
+    }
 
     CellularSpace(const int &x_init, const int &y_init, const int &height, const int &width){
         this->x_init = x_init;
@@ -35,7 +42,7 @@ public:
 
         if(comm_rank == 0){
             char word_cellular_space[23];
-            count = (this->height*this->width)/(comm_size-1);
+            count = (this->height*this->width)/comm_workers;
             offset = 0;
             int x_init_s, y_init_s, height_s, width_s;
 
@@ -64,12 +71,10 @@ public:
             int address = MPI_Address(&cs, &aint);
             // cout << comm_rank << "\t" << aint << endl;
             for(int i = 0; i < (cs.height * cs.width); i++){
-                cs.memoria[(i + cs.x_init*cs.width)] = Cell<T>((i + cs.x_init*cs.width), (i%(cs.height * cs.width)),
+                cs.memoria[i] = Cell<T>((i + cs.x_init*cs.width), (i%(cs.height * cs.width)),
                     Attribute<T>((i + cs.x_init*cs.width), 0));
-                cs.memoria[(i + cs.x_init*cs.width)] =
-                    cs.memoria[(i + cs.x_init*cs.width)].SetNeighbor(cs.memoria[(i + cs.x_init*cs.width)]);
+                cs.memoria[i] = cs.memoria[i].SetNeighbor();
             }
-            
         }
     }
 };

@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 	std::vector<int> buffer(1);
 	buffer[0] = comm_rank;
 
-	CellularSpace<double> cs = CellularSpace<double>(0, 0, DIMX, DIMY);
+	CellularSpace<double> cs = CellularSpace<double>(DIMX, DIMY);
 	cs.Scatter(MPI_COMM_WORLD);
 
 	if (comm_rank == 0){

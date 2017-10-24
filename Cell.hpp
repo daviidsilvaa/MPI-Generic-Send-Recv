@@ -66,91 +66,89 @@ public:
         return this->attribute;
     }
 
-    Cell<T> SetNeighbor(Cell<T> cell_received){
-        Cell<T> cell = Cell<T>(cell_received);
-        int neighbors[NEIGHBORS + NEIGHBORS];
-        int count_neighbors;
+    Cell<T> SetNeighbor(){
+        Cell<T> cell = *this;
 
         if(cell.x == 0){
             if(cell.y == 0){
-                count_neighbors = 3;
-                neighbors[0] = cell.x;      neighbors[NEIGHBORS + 0] = cell.y + 1;
-                neighbors[1] = cell.x + 1;  neighbors[NEIGHBORS + 1] = cell.y + 1;
-                neighbors[2] = cell.x + 1;  neighbors[NEIGHBORS + 2] = cell.y;
+                cell.count_neighbors = 3;
+                cell.neighbors[0] = cell.x;      cell.neighbors[NEIGHBORS + 0] = cell.y + 1;
+                cell.neighbors[1] = cell.x + 1;  cell.neighbors[NEIGHBORS + 1] = cell.y + 1;
+                cell.neighbors[2] = cell.x + 1;  cell.neighbors[NEIGHBORS + 2] = cell.y;
                 return cell;
             }if(cell.y == DIMY-1){
-                count_neighbors = 3;
-                neighbors[0] = cell.x;      neighbors[NEIGHBORS + 0] = cell.y - 1;
-                neighbors[1] = cell.x + 1;  neighbors[NEIGHBORS + 1] = cell.y - 1;
-                neighbors[2] = cell.x + 1;  neighbors[NEIGHBORS + 2] = cell.y;
+                cell.count_neighbors = 3;
+                cell.neighbors[0] = cell.x;      cell.neighbors[NEIGHBORS + 0] = cell.y - 1;
+                cell.neighbors[1] = cell.x + 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
+                cell.neighbors[2] = cell.x + 1;  cell.neighbors[NEIGHBORS + 2] = cell.y;
                 return cell;
             }
             if(cell.y != DIMY-1 && cell.y != 0){
-                count_neighbors = 5;
-                neighbors[0] = cell.x;      neighbors[NEIGHBORS + 0] = cell.y + 1;
-                neighbors[1] = cell.x + 1;  neighbors[NEIGHBORS + 1] = cell.y + 1;
-                neighbors[2] = cell.x + 1;  neighbors[NEIGHBORS + 2] = cell.y;
-                neighbors[3] = cell.x + 1;  neighbors[NEIGHBORS + 3] = cell.y - 1;
-                neighbors[4] = cell.x;      neighbors[NEIGHBORS + 4] = cell.y - 1;
+                cell.count_neighbors = 5;
+                cell.neighbors[0] = cell.x;      cell.neighbors[NEIGHBORS + 0] = cell.y + 1;
+                cell.neighbors[1] = cell.x + 1;  cell.neighbors[NEIGHBORS + 1] = cell.y + 1;
+                cell.neighbors[2] = cell.x + 1;  cell.neighbors[NEIGHBORS + 2] = cell.y;
+                cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
+                cell.neighbors[4] = cell.x;      cell.neighbors[NEIGHBORS + 4] = cell.y - 1;
                 return cell;
             }
         }
         if(cell.x == DIMX-1){
             if(cell.y == 0){
-                count_neighbors = 3;
-                neighbors[0] = cell.x - 1;  neighbors[NEIGHBORS + 0] = cell.y;
-                neighbors[1] = cell.x - 1;  neighbors[NEIGHBORS + 1] = cell.y - 1;
-                neighbors[2] = cell.x;      neighbors[NEIGHBORS + 2] = cell.y + 1;
+                cell.count_neighbors = 3;
+                cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+                cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
+                cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y + 1;
                 return cell;
             }
             if(cell.y == DIMY-1){
-                count_neighbors = 3;
-                neighbors[0] = cell.x - 1;  neighbors[NEIGHBORS + 0] = cell.y;
-                neighbors[1] = cell.x - 1;  neighbors[NEIGHBORS + 1] = cell.y - 1;
-                neighbors[2] = cell.x;      neighbors[NEIGHBORS + 2] = cell.y - 1;
+                cell.count_neighbors = 3;
+                cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+                cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
+                cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y - 1;
                 return cell;
             }
             if(cell.y != DIMY-1 && cell.y != 0){
-                count_neighbors = 5;
-                neighbors[0] = cell.x;      neighbors[NEIGHBORS + 0] = cell.y + 1;
-                neighbors[1] = cell.x - 1;  neighbors[NEIGHBORS + 1] = cell.y + 1;
-                neighbors[2] = cell.x - 1;  neighbors[NEIGHBORS + 2] = cell.y;
-                neighbors[3] = cell.x - 1;  neighbors[NEIGHBORS + 3] = cell.y - 1;
-                neighbors[4] = cell.x;      neighbors[NEIGHBORS + 4] = cell.y - 1;
+                cell.count_neighbors = 5;
+                cell.neighbors[0] = cell.x;      cell.neighbors[NEIGHBORS + 0] = cell.y + 1;
+                cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y + 1;
+                cell.neighbors[2] = cell.x - 1;  cell.neighbors[NEIGHBORS + 2] = cell.y;
+                cell.neighbors[3] = cell.x - 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
+                cell.neighbors[4] = cell.x;      cell.neighbors[NEIGHBORS + 4] = cell.y - 1;
                 return cell;
             }
             if(cell.y == 0){
                 if((cell.x != 0) && (cell.x != DIMX-1)){
-                    count_neighbors = 5;
-                    neighbors[0] = cell.x - 1;  neighbors[NEIGHBORS + 0] = cell.y;
-                    neighbors[1] = cell.x - 1;  neighbors[NEIGHBORS + 1] = cell.y + 1;
-                    neighbors[2] = cell.x;      neighbors[NEIGHBORS + 2] = cell.y + 1;
-                    neighbors[3] = cell.x + 1;  neighbors[NEIGHBORS + 3] = cell.y + 1;
-                    neighbors[4] = cell.x + 1;  neighbors[NEIGHBORS + 4] = cell.y;
+                    cell.count_neighbors = 5;
+                    cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+                    cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y + 1;
+                    cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y + 1;
+                    cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y + 1;
+                    cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
                     return cell;
                 }
             }
             if(cell.y == DIMY-1){
                 if((cell.x != 0) && (cell.x != DIMX-1)){
-                    count_neighbors = 5;
-                    neighbors[0] = cell.x - 1;  neighbors[NEIGHBORS + 0] = cell.y;
-                    neighbors[1] = cell.x - 1;  neighbors[NEIGHBORS + 1] = cell.y - 1;
-                    neighbors[2] = cell.x;      neighbors[NEIGHBORS + 2] = cell.y - 1;
-                    neighbors[3] = cell.x + 1;  neighbors[NEIGHBORS + 3] = cell.y - 1;
-                    neighbors[4] = cell.x + 1;  neighbors[NEIGHBORS + 4] = cell.y;
+                    cell.count_neighbors = 5;
+                    cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+                    cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
+                    cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y - 1;
+                    cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
+                    cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
                     return cell;
                 }
             }
             if(cell.x > 0 && cell.x < DIMX-1 && cell.y > 0 && cell.y < DIMY-1){
-                count_neighbors = 8;
-                neighbors[0] = cell.x - 1;  neighbors[NEIGHBORS + 0] = cell.y;
-                neighbors[1] = cell.x - 1;  neighbors[NEIGHBORS + 1] = cell.y - 1;
-                neighbors[2] = cell.x;      neighbors[NEIGHBORS + 2] = cell.y - 1;
-                neighbors[3] = cell.x + 1;  neighbors[NEIGHBORS + 3] = cell.y - 1;
-                neighbors[4] = cell.x + 1;  neighbors[NEIGHBORS + 4] = cell.y;
-                neighbors[5] = cell.x + 1;  neighbors[NEIGHBORS + 5] = cell.y + 1;
-                neighbors[6] = cell.x;      neighbors[NEIGHBORS + 6] = cell.y - 1;
-                neighbors[7] = cell.x - 1;  neighbors[NEIGHBORS + 7] = cell.y + 1;
+                cell.count_neighbors = 8;
+                cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+                cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
+                cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y - 1;
+                cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
+                cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
+                cell.neighbors[5] = cell.x + 1;  cell.neighbors[NEIGHBORS + 5] = cell.y + 1;
+                cell.neighbors[6] = cell.x;      cell.neighbors[NEIGHBORS + 6] = cell.y - 1;
+                cell.neighbors[7] = cell.x - 1;  cell.neighbors[NEIGHBORS + 7] = cell.y + 1;
                 return cell;
             }
         }
