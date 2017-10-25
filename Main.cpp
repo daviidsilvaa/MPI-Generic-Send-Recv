@@ -6,14 +6,10 @@
 #include "Attribute.hpp"
 #include "Cell.hpp"
 #include "CellularSpace.hpp"
-#include "Flow.hpp"
+#include "Exponencial.hpp"
+#include "Model.hpp"
 #include "Defines.hpp"
 using namespace std;
-
-template<>
-double Flow<double>::execute(){
-	return 0.1;
-}
 
 int main(int argc, char **argv){
 	int comm_rank;
@@ -27,8 +23,13 @@ int main(int argc, char **argv){
 	std::vector<int> buffer(1);
 	buffer[0] = comm_rank;
 
+	// cs.Scatter(MPI_COMM_WORLD);
+
 	CellularSpace<double> cs = CellularSpace<double>(DIMX, DIMY);
-	cs.Scatter(MPI_COMM_WORLD);
+	Model<Exponencial<double>> m1 =
+		Model<Exponencial<double>>(Exponencial<double>(Cell<double>(5, 6, Attribute<double>(99, 2.2)), 0.1), 10.0, 0.2);
+
+	m1.execute<double>(MPI_COMM_WORLD, cs);
 
 	if (comm_rank == 0){
 		for (int i = 1; i < comm_size; i++){
