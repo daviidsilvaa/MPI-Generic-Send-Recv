@@ -3,6 +3,8 @@
 #define CELL_HPP
 
 #include "Defines.hpp"
+#include <iostream>
+using namespace std;
 
 template<typename T>
 class Cell{
@@ -117,40 +119,40 @@ public:
                 cell.neighbors[4] = cell.x;      cell.neighbors[NEIGHBORS + 4] = cell.y - 1;
                 return cell;
             }
-            if(cell.y == 0){
-                if((cell.x != 0) && (cell.x != DIMX-1)){
-                    cell.count_neighbors = 5;
-                    cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
-                    cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y + 1;
-                    cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y + 1;
-                    cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y + 1;
-                    cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
-                    return cell;
-                }
+        }
+        if(cell.y == 0){
+            if((cell.x != 0) && (cell.x != DIMX-1)){
+                cell.count_neighbors = 5;
+                cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+                cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y + 1;
+                cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y + 1;
+                cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y + 1;
+                cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
+                return cell;
             }
-            if(cell.y == DIMY-1){
-                if((cell.x != 0) && (cell.x != DIMX-1)){
-                    cell.count_neighbors = 5;
-                    cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
-                    cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
-                    cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y - 1;
-                    cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
-                    cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
-                    return cell;
-                }
-            }
-            if(cell.x > 0 && cell.x < DIMX-1 && cell.y > 0 && cell.y < DIMY-1){
-                cell.count_neighbors = 8;
+        }
+        if(cell.y == DIMY-1){
+            if((cell.x != 0) && (cell.x != DIMX-1)){
+                cell.count_neighbors = 5;
                 cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
                 cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
                 cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y - 1;
                 cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
                 cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
-                cell.neighbors[5] = cell.x + 1;  cell.neighbors[NEIGHBORS + 5] = cell.y + 1;
-                cell.neighbors[6] = cell.x;      cell.neighbors[NEIGHBORS + 6] = cell.y - 1;
-                cell.neighbors[7] = cell.x - 1;  cell.neighbors[NEIGHBORS + 7] = cell.y + 1;
                 return cell;
             }
+        }
+        if(cell.x > 0 && cell.x < DIMX-1 && cell.y > 0 && cell.y < DIMY-1){
+            cell.count_neighbors = 8;
+            cell.neighbors[0] = cell.x - 1;  cell.neighbors[NEIGHBORS + 0] = cell.y;
+            cell.neighbors[1] = cell.x - 1;  cell.neighbors[NEIGHBORS + 1] = cell.y - 1;
+            cell.neighbors[2] = cell.x;      cell.neighbors[NEIGHBORS + 2] = cell.y - 1;
+            cell.neighbors[3] = cell.x + 1;  cell.neighbors[NEIGHBORS + 3] = cell.y - 1;
+            cell.neighbors[4] = cell.x + 1;  cell.neighbors[NEIGHBORS + 4] = cell.y;
+            cell.neighbors[5] = cell.x + 1;  cell.neighbors[NEIGHBORS + 5] = cell.y + 1;
+            cell.neighbors[6] = cell.x;      cell.neighbors[NEIGHBORS + 6] = cell.y + 1;
+            cell.neighbors[7] = cell.x - 1;  cell.neighbors[NEIGHBORS + 7] = cell.y + 1;
+            return cell;
         }
     }
 };
