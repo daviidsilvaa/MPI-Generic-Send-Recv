@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 
 	CellularSpace<double> cs = CellularSpace<double>(DIMX, DIMY);
 	Model<Exponencial<double>> m1 =
-		Model<Exponencial<double>>(Exponencial<double>(Cell<double>(0, 99, Attribute<double>(99, 2.2)), 0.1), 10.0, 0.2);
+		Model<Exponencial<double>>(Exponencial<double>(Cell<double>(19, 3, Attribute<double>(99, 2.2)), 0.1), 10.0, 0.2);
 
 	m1.execute<double>(MPI_COMM_WORLD, cs);
 
