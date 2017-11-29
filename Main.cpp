@@ -8,6 +8,7 @@
 #include "CellularSpace.hpp"
 #include "Exponencial.hpp"
 #include "Model.hpp"
+#include "ModelRectangular.hpp"
 #include "Defines.hpp"
 using namespace std;
 
@@ -30,6 +31,11 @@ int main(int argc, char **argv){
 		Model<Exponencial<double>>(Exponencial<double>(Cell<double>(19, 3, Attribute<double>(99, 2.2)), 0.1), 10.0, 0.2);
 
 	m1.execute<double>(MPI_COMM_WORLD, cs);
+
+	ModelRectangular<Exponencial<double>> m2 =
+		ModelRectangular<Exponencial<double>>(Exponencial<double>(Cell<double>(19, 3, Attribute<double>(99, 2.2)), 0.1), 10.0, 0.2);
+
+	m2.execute<double>(MPI_COMM_WORLD, cs);
 
 	if (comm_rank == 0){
 		for (int i = 1; i < comm_size; i++){

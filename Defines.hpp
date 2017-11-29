@@ -5,6 +5,7 @@
 #define DIMX 100
 #define DIMY 100
 #define NWORKERS 5
+#define CONSUMER 6
 #define PROC_DIMX DIMX/NWORKERS
 #define PROC_DIMY DIMY
 #define MASTER 0

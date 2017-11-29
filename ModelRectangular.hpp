@@ -1,6 +1,6 @@
 
-#ifndef MODEL_HPP
-#define MODEL_HPP
+#ifndef MODELRECTANGULAR_HPP
+#define MODELRECTANGULAR_HPP
 
 #include "CellularSpace.hpp"
 #include "Flow.hpp"
@@ -11,27 +11,27 @@
 using namespace std;
 
 template<class T>
-class Model{
+class ModelRectangular{
 public:
     T flow;
     double time;
     double time_step;
 
-    Model(){ }
+    ModelRectangular(){ }
 
-    Model(const T &flow, const double &time, const double &time_step){
+    ModelRectangular(const T &flow, const double &time, const double &time_step){
         this->flow = flow;
         this->time = time;
         this->time_step = time_step;
     }
 
-    Model(const Model<T> &model){
+    ModelRectangular(const ModelRectangular<T> &model){
         this->flow = model.flow;
         this->time = model.time;
         this->time_step = model.time_step;
     }
 
-    Model<T>& operator=(const Model<T> &model){
+    ModelRectangular<T>& operator=(const ModelRectangular<T> &model){
         if(this != &model){
             this->flow = model.flow;
             this->time = model.time;
@@ -40,7 +40,7 @@ public:
         return *this;
     }
 
-    ~Model(){ }
+    ~ModelRectangular(){ }
 
     // missing implement
     double execute(){
@@ -65,7 +65,7 @@ public:
             int index[comm_size];
             char word_cs_send[23];
 
-            // para cada maquina { crie uma regiao (i.e.linhas) do espaço celular }
+            // para cada maquina { crie uma regiao (i.e. retangulos) do espaço celular }
             for(int dest = 1; dest <= NWORKERS; dest++){
                 sprintf(word_cs_send, "%d|%d:%d|%d",
                     offset/cellular_space.width, cellular_space.y_init, cellular_space.height/comm_workers, cellular_space.width);
@@ -172,9 +172,9 @@ public:
 
                                 MPI_Send(&count_neighbors_send, 1, MPI_INT, rank_+1, rank_, MPI_COMM_WORLD);
                                 MPI_Send(&last_execute_send, 1, ConvertType(getAbstractionDataType<R>()), rank_+1, rank_, MPI_COMM_WORLD);
+                                cout << __FILE__ << ": " << __LINE__ << endl;
                                 MPI_Send(&y_send, 1, MPI_INT, rank_+1, rank_+10, MPI_COMM_WORLD);
                             }
-                            cout << __FILE__ << ": " << __LINE__ << endl;
                             break;
                         case 8:
                             count_neighbors_send = 3;
@@ -224,7 +224,7 @@ public:
             fstream file_output;
             char file_output_name[20];
 
-            sprintf(file_output_name, "Output/comm_rank%d.txt", comm_rank);
+            sprintf(file_output_name, "OutputRectangular/comm_rank%d.txt", comm_rank);
             file_output.open(file_output_name, fstream::out | fstream::trunc);
 
             for(int i = 0; i < PROC_DIMX*PROC_DIMY; i++){
@@ -246,7 +246,7 @@ public:
                 MPI_Irecv(file_output_name_recv, 20, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_consumer_request);
                 // MPI_Wait(&mpi_consumer_request, &mpi_status_consumer);
                 file_output_recv.open(file_output_name_recv, fstream::in);
-                file_output.open("Output/output.txt", fstream::out | fstream::ate);
+                file_output.open("OutputRectangular/output.txt", fstream::out | fstream::ate);
 
                 if(file_output_recv.is_open()){
                     if(file_output.is_open()){
