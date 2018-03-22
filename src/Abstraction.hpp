@@ -2,6 +2,8 @@
 #ifndef ABSTRACTION_HPP
 #define ABSTRACTION_HPP
 
+#include <stdexcept>
+
 namespace Abstraction{
 	typedef enum{
 		type_unknown = 0,

@@ -5,8 +5,6 @@
 #include "mpi.h"
 #include "Cell.hpp"
 #include "DefinesRectangular.hpp"
-#include <iostream>
-using namespace std;
 
 template<class T>
 class CellularSpaceRectangular{

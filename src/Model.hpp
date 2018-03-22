@@ -95,7 +95,7 @@ public:
             assert((acumulated_value_recv - 10000) < 0.001);
 
             // recebe o dado de conclusao de geracao dos arquivos de cada SLAYER
-            char file_output_name_recv[40];
+            char file_output_name_recv[30];
             char str_c[50];
             string line_, str_ = "../output/output ";
             fstream file_output, file_output_recv;
@@ -106,9 +106,8 @@ public:
             strcpy(str_c, str_.c_str());
 
             file_output.open(str_c, fstream::out | fstream::ate);
-            cout << str_c << endl;
             for(int source = 1; source <= NWORKERS; source++){
-                MPI_Recv(file_output_name_recv, 40, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_status);
+                MPI_Recv(file_output_name_recv, 30, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_status);
 
                 file_output_recv.open(file_output_name_recv, fstream::in);
 
@@ -244,7 +243,7 @@ public:
 
             // cada slayer salva seus dados do cellular space sao salvos num arquivo .txt
             fstream file_output;
-            char file_output_name[40];
+            char file_output_name[30];
 
             sprintf(file_output_name, "../output/comm_rank%d.txt", comm_rank);
             file_output.open(file_output_name, fstream::out | fstream::trunc);
@@ -257,7 +256,7 @@ public:
             file_output.close();
 
             // e envia a conclusao de geracao do arquivo para que a MASTER junte todos os resultados gerados
-            MPI_Send(file_output_name, 40, MPI_CHAR, MASTER, comm_rank, MPI_COMM_WORLD);
+            MPI_Send(file_output_name, 30, MPI_CHAR, MASTER, comm_rank, MPI_COMM_WORLD);
         }
     }
 };
