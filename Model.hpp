@@ -6,6 +6,7 @@
 #include "Flow.hpp"
 #include "MPIImpl.hpp"
 #include "assert.h"
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -80,8 +81,6 @@ public:
             sprintf(word_execute_send, "%d|%d:%d|%lf", dest_, this->flow.source.x, this->flow.source.y, this->flow.flow_rate);
             cout << word_execute_send << endl;
 
-            // cout << word_execute_send << endl;
-
             for(int dest = 1; dest <= comm_size-1; dest++){
                 MPI_Send(word_execute_send, 23, MPI_CHAR, dest, 999, mpi_comm);
             }
@@ -96,40 +95,40 @@ public:
             assert((acumulated_value_recv - 10000) < 0.001);
 
             // recebe o dado de conclusao de geracao dos arquivos de cada SLAYER
-            char file_output_name_recv[30];
-            char str_c[50];
-            string line_, str_ = "Output/output ";
-            fstream file_output, file_output_recv;
-
-            // definindo o nome do arquivo de saida
-            str_ += __TIMESTAMP__;
-            str_ += ".txt";
-            strcpy(str_c, str_.c_str());
-
-            file_output.open(str_c, fstream::out | fstream::ate);
-            for(int source = 1; source <= NWORKERS; source++){
-                MPI_Recv(file_output_name_recv, 30, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_status);
-
-                file_output_recv.open(file_output_name_recv, fstream::in);
-
-                if(file_output_recv.is_open()){
-                    if(file_output.is_open()){
-                        while(getline(file_output_recv, line_)){
-                            line_ += "\n";
-                            file_output << line_;
-                        }
-                    }else{
-                        cout << __FILE__ << ": " << __LINE__ << endl;
-                    }
-                }else{
-                    cout << __FILE__ << ": " << __LINE__ << endl;
-                }
-
-                // fechando os arquivos
-                file_output_recv.close();
-            }
-            file_output.close();
-        }
+        //     char file_output_name_recv[30];
+        //     char str_c[50];
+        //     string line_, str_ = "Output/output ";
+        //     fstream file_output, file_output_recv;
+        //
+        //     // definindo o nome do arquivo de saida
+        //     str_ += __TIMESTAMP__;
+        //     str_ += ".txt";
+        //     strcpy(str_c, str_.c_str());
+        //
+        //     file_output.open(str_c, fstream::out | fstream::ate);
+        //     for(int source = 1; source <= NWORKERS; source++){
+        //         MPI_Recv(file_output_name_recv, 30, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_status);
+        //
+        //         file_output_recv.open(file_output_name_recv, fstream::in);
+        //
+        //         if(file_output_recv.is_open()){
+        //             if(file_output.is_open()){
+        //                 while(getline(file_output_recv, line_)){
+        //                     line_ += "\n";
+        //                     file_output << line_;
+        //                 }
+        //             }else{
+        //                 cout << __FILE__ << ": " << __LINE__ << endl;
+        //             }
+        //         }else{
+        //             cout << __FILE__ << ": " << __LINE__ << endl;
+        //         }
+        //
+        //         // fechando os arquivos
+        //         file_output_recv.close();
+        //     }
+        //     file_output.close();
+        // }
 
         // executa a simulacao nas maquinas slayers
         if(comm_rank != 0){
@@ -172,6 +171,7 @@ public:
             // subtrair flow
             // incrementar flow
 
+            // maquina que armazena a celula a ser fluxionada executa() o fluxo
             if(comm_rank == rank_){
                 cout << cs.memoria[x_*cs.width + y_ - cs.x_init].x << " " << cs.memoria[x_*cs.width + y_ - cs.x_init].y
                     << " " << cs.memoria[x_*cs.width + y_].count_neighbors << endl;
