@@ -2,7 +2,7 @@
 #ifndef MODELRECTANGULAR_HPP
 #define MODELRECTANGULAR_HPP
 
-#include "CellularSpace.hpp"
+#include "CellularSpaceRectangular.hpp"
 #include "Flow.hpp"
 #include "MPIImpl.hpp"
 #include "assert.h"
@@ -50,8 +50,8 @@ public:
     }
 
     template<class R>
-    void execute(const MPI_Comm &mpi_comm, const CellularSpace<R> &cellular_space){
-        int comm_size, comm_rank, comm_workers, count, offset;
+    void execute(const MPI_Comm &mpi_comm, const CellularSpaceRectangular<R> &cellular_space){
+        int comm_size, comm_rank, comm_workers, offset_x, offset_y;
         MPI_Comm_size(mpi_comm, &comm_size);
         MPI_Comm_rank(mpi_comm, &comm_rank);
         MPI_Status mpi_status, mpi_status_consumer;
@@ -60,67 +60,71 @@ public:
 
         // maquina master
         if(comm_rank == 0){
-            count = (cellular_space.height*cellular_space.width)/comm_workers;
-            offset = 0;
+            offset_x = offset_y = 0;
             int x_init_s, y_init_s, height_s, width_s;
             int index[comm_size];
             char word_cs_send[23];
 
             // para cada maquina { crie uma regiao (i.e. retangulos) do espaço celular }
-            for(int dest = 1; dest <= NWORKERS; dest++){
+            for(int dest = 1; dest <= comm_workers; dest++){
                 sprintf(word_cs_send, "%d|%d:%d|%d",
-                    offset/cellular_space.width, cellular_space.y_init, cellular_space.height/comm_workers, cellular_space.width);
+                    offset_x, offset_y, PROC_DIMX_REC, PROC_DIMY_REC);
                 MPI_Send(word_cs_send, 23, MPI_CHAR, dest, FROM_MASTER, MPI_COMM_WORLD);
-                offset = offset + count;
-                index[dest]= offset;
+
+                offset_y = offset_y + PROC_DIMY_REC;
+                // verifica se a proxima linha de retangulos sera passada para sua maquina correspondente
+                if(offset_y == DIMY_REC){
+                    offset_x = offset_x + PROC_DIMX_REC;
+                    offset_y = 0;
+                }
             }
 
             // envia os dados necessarios para que Flow::execute() seja feito nos demais processos
             char word_execute_send[23];
-            int dest_ = (this->flow.source.x/(cellular_space.height/comm_workers)) + 1;
+            int dest_ = ((this->flow.source.x/LINES_REC)/(cellular_space.height/this->flow.source.y)) + 1;
             sprintf(word_execute_send, "%d|%d:%d|%lf", dest_, this->flow.source.x, this->flow.source.y, this->flow.flow_rate);
-            cout << word_execute_send << endl;
+            cout << word_execute_send << " " << dest_ << endl;
 
             for(int dest = 1; dest <= comm_workers; dest++){
                 MPI_Send(word_execute_send, 23, MPI_CHAR, dest, 999, mpi_comm);
             }
-
-            // recebe a soma dos cell.attribute.value presente em cada maquina
-            R temp, acumulated_value_recv = 0;
-            for(int source = 1; source <= comm_workers; source++){
-                MPI_Irecv(&temp, 1, ConvertType(getAbstractionDataType<R>()), source, source, MPI_COMM_WORLD, &mpi_recv_request);
-                acumulated_value_recv += temp;
-            }
-
-            // verifica se os valores simulados foram conservados
-            assert((acumulated_value_recv - 10000) < 0.001);
-
-            // no final da execucao, a maquina master computa os dados gerados e unifica-o em uma mesma estrutura de dados(ie, aquivo .txt)
-            char file_output_name_recv[20];
-            string line_;
-            fstream file_output, file_output_recv;
-
-            for(int source = 1; source <= comm_workers; source++){
-                MPI_Irecv(file_output_name_recv, 20, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_consumer_request);
-                // MPI_Wait(&mpi_consumer_request, &mpi_status_consumer);
-                file_output_recv.open(file_output_name_recv, fstream::in);
-                file_output.open("OutputRectangular/output.txt", fstream::out | fstream::ate);
-
-                if(file_output_recv.is_open()){
-                    if(file_output.is_open()){
-                        while(getline(file_output_recv, line_)){
-                            file_output << line_;
-                        }
-                    }else{
-                        cout << __FILE__ << ": " << __LINE__ << endl;
-                    }
-                }else{
-                    cout << __FILE__ << ": " << __LINE__ << endl;
-                }
-            }
-            // cout << comm_rank << ":\t" << __FILE__ << ": " << __LINE__ << endl;
-            file_output_recv.close();
-            file_output.close();
+            //
+            // // recebe a soma dos cell.attribute.value presente em cada maquina
+            // R temp, acumulated_value_recv = 0;
+            // for(int source = 1; source <= comm_workers; source++){
+            //     MPI_Irecv(&temp, 1, ConvertType(getAbstractionDataType<R>()), source, source, MPI_COMM_WORLD, &mpi_recv_request);
+            //     acumulated_value_recv += temp;
+            // }
+            //
+            // // verifica se os valores simulados foram conservados
+            // assert((acumulated_value_recv - 10000) < 0.001);
+            //
+            // // no final da execucao, a maquina master computa os dados gerados e unifica-o em uma mesma estrutura de dados(ie, aquivo .txt)
+            // char file_output_name_recv[20];
+            // string line_;
+            // fstream file_output, file_output_recv;
+            //
+            // for(int source = 1; source <= comm_workers; source++){
+            //     MPI_Irecv(file_output_name_recv, 20, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_consumer_request);
+            //     // MPI_Wait(&mpi_consumer_request, &mpi_status_consumer);
+            //     file_output_recv.open(file_output_name_recv, fstream::in);
+            //     file_output.open("OutputRectangular/output.txt", fstream::out | fstream::ate);
+            //
+            //     if(file_output_recv.is_open()){
+            //         if(file_output.is_open()){
+            //             while(getline(file_output_recv, line_)){
+            //                 file_output << line_;
+            //             }
+            //         }else{
+            //             cout << __FILE__ << ": " << __LINE__ << endl;
+            //         }
+            //     }else{
+            //         cout << __FILE__ << ": " << __LINE__ << endl;
+            //     }
+            // }
+            // // cout << comm_rank << ":\t" << __FILE__ << ": " << __LINE__ << endl;
+            // file_output_recv.close();
+            // file_output.close();
 
         }
 
@@ -138,8 +142,8 @@ public:
             int height_s = atoi(height_c);
             int width_s = atoi(width_c);
 
-
             CellularSpace<R> cs = CellularSpace<R>(x_init_s, y_init_s, height_s, width_s);
+
 
             // inicializando a vizinhanca do cellular space criado em cada maquina
             for(int i = 0; i < (cs.height * cs.width); i++){
@@ -147,6 +151,7 @@ public:
                 cs.memoria[i] = cs.memoria[i].SetNeighbor();
             }
 
+            // maquina i recebe a ordem de execucao do fluxo
             MPI_Recv(word_execute_recv, 23, MPI_CHAR, MASTER, 999, mpi_comm, &mpi_status);
             char *rank_c = strtok(word_execute_recv, "|:");
             char *x_c = strtok(NULL, ":");
@@ -157,8 +162,8 @@ public:
             int y_ = atoi(y_c);
             int flow_rate_ = atoi(flow_rate_c);
 
-            // corrigir x_init
             // corrigir endereçamento de cell
+            // corrigir x_init
             // corrigir acesso a cell
             // subtrair flow
             // incrementar flow
@@ -177,7 +182,7 @@ public:
 
                 // atualizando o valor do atributo na maquina vizinha
                 // se a atualização for em comm_rank + 1
-                if(cs.memoria[x_*cs.width + y_ - cs.x_init].x - cs.x_init == PROC_DIMX-1){
+                if(cs.memoria[x_*cs.width + y_ - cs.x_init].x - cs.x_init == PROC_DIMX_REC-1){
                     switch(cs.memoria[x_*cs.width + y_ - cs.x_init].count_neighbors){
                         case 3:
                             cout << __FILE__ << ": " << __LINE__ << endl;
@@ -224,42 +229,42 @@ public:
                     }
                 }
             }
-
-            if(comm_rank == rank_+1){
-                int count_neighbors_recv, y_recv;
-                R last_execute_recv;
-
-                MPI_Recv(&count_neighbors_recv, 1, MPI_INT, rank_, rank_, MPI_COMM_WORLD, &mpi_status);
-                MPI_Recv(&last_execute_recv, 1, ConvertType(getAbstractionDataType<R>()), rank_, rank_, MPI_COMM_WORLD, &mpi_status);
-                MPI_Recv(&y_recv, 1, MPI_INT, rank_, rank_+10, MPI_COMM_WORLD, &mpi_status);
-
-                // cout << rank_+1 << ": " << count_neighbors_recv << " " << last_execute_recv << " " << y_recv << endl;
-                for(int i = 0; i < count_neighbors_recv; i++)
-                    cs.memoria[y_recv + i].attribute.value += last_execute_recv;
-            }
-
-            // Calculando o somatorio dos valores atributos resultante na particao do espaco celular
-            R acumulated_value_send = 0;
-            for(int i = 0; i < cs.height*cs.width; i++)
-                acumulated_value_send += cs.memoria[i].attribute.value;
-
-            // cout << "\t" << comm_rank << ": " << acumulated_value_send << endl;
-            MPI_Send(&acumulated_value_send, 1, ConvertType(getAbstractionDataType<R>()), MASTER, comm_rank, MPI_COMM_WORLD);
-
-            // Arquivo que armazenará os dados de saida
-            fstream file_output;
-            char file_output_name[20];
-
-            sprintf(file_output_name, "OutputRectangular/comm_rank%d.txt", comm_rank);
-            file_output.open(file_output_name, fstream::out | fstream::trunc);
-
-            for(int i = 0; i < PROC_DIMX*PROC_DIMY; i++){
-                file_output << cs.memoria[i].x << "\t" << cs.memoria[i].y << "\t";
-                file_output << cs.memoria[i].attribute.value << endl;
-            }
-            file_output.close();
-
-            MPI_Send(file_output_name, 20, MPI_CHAR, MASTER, comm_rank, MPI_COMM_WORLD);
+        //
+        //     if(comm_rank == rank_+1){
+        //         int count_neighbors_recv, y_recv;
+        //         R last_execute_recv;
+        //
+        //         MPI_Recv(&count_neighbors_recv, 1, MPI_INT, rank_, rank_, MPI_COMM_WORLD, &mpi_status);
+        //         MPI_Recv(&last_execute_recv, 1, ConvertType(getAbstractionDataType<R>()), rank_, rank_, MPI_COMM_WORLD, &mpi_status);
+        //         MPI_Recv(&y_recv, 1, MPI_INT, rank_, rank_+10, MPI_COMM_WORLD, &mpi_status);
+        //
+        //         // cout << rank_+1 << ": " << count_neighbors_recv << " " << last_execute_recv << " " << y_recv << endl;
+        //         for(int i = 0; i < count_neighbors_recv; i++)
+        //             cs.memoria[y_recv + i].attribute.value += last_execute_recv;
+        //     }
+        //
+        //     // Calculando o somatorio dos valores atributos resultante na particao do espaco celular
+        //     R acumulated_value_send = 0;
+        //     for(int i = 0; i < cs.height*cs.width; i++)
+        //         acumulated_value_send += cs.memoria[i].attribute.value;
+        //
+        //     // cout << "\t" << comm_rank << ": " << acumulated_value_send << endl;
+        //     MPI_Send(&acumulated_value_send, 1, ConvertType(getAbstractionDataType<R>()), MASTER, comm_rank, MPI_COMM_WORLD);
+        //
+        //     // Arquivo que armazenará os dados de saida
+        //     fstream file_output;
+        //     char file_output_name[20];
+        //
+        //     sprintf(file_output_name, "OutputRectangular/comm_rank%d.txt", comm_rank);
+        //     file_output.open(file_output_name, fstream::out | fstream::trunc);
+        //
+        //     for(int i = 0; i < PROC_DIMX*PROC_DIMY; i++){
+        //         file_output << cs.memoria[i].x << "\t" << cs.memoria[i].y << "\t";
+        //         file_output << cs.memoria[i].attribute.value << endl;
+        //     }
+        //     file_output.close();
+        //
+        //     MPI_Send(file_output_name, 20, MPI_CHAR, MASTER, comm_rank, MPI_COMM_WORLD);
         }
     }
 };
