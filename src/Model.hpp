@@ -105,6 +105,7 @@ public:
             str_ += ".txt";
             strcpy(str_c, str_.c_str());
 
+
             file_output.open(str_c, fstream::out | fstream::ate);
             for(int source = 1; source <= NWORKERS; source++){
                 MPI_Recv(file_output_name_recv, 30, MPI_CHAR, source, source, MPI_COMM_WORLD, &mpi_status);

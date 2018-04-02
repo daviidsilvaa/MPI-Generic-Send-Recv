@@ -81,7 +81,9 @@ public:
 
             // envia os dados necessarios para que Flow::execute() seja feito nos demais processos
             char word_execute_send[23];
-            int dest_ = ((this->flow.source.x/LINES_REC)/(cellular_space.height/this->flow.source.y)) + 1;
+            cout << comm_rank << ": " << cellular_space.height << ":\t" << __LINE__ << endl;
+            int dest_ = ((this->flow.source.x + this->flow.source.y)/cellular_space.height) + 1;
+            cout << comm_rank << ": " << __FILE__ << ":\t" << __LINE__ << endl;
             sprintf(word_execute_send, "%d|%d:%d|%lf", dest_, this->flow.source.x, this->flow.source.y, this->flow.flow_rate);
             cout << word_execute_send << " " << dest_ << endl;
 
@@ -153,6 +155,7 @@ public:
 
             // maquina i recebe a ordem de execucao do fluxo
             MPI_Recv(word_execute_recv, 23, MPI_CHAR, MASTER, 999, mpi_comm, &mpi_status);
+            cout << word_execute_recv << endl;
             char *rank_c = strtok(word_execute_recv, "|:");
             char *x_c = strtok(NULL, ":");
             char *y_c = strtok(NULL, "|");
